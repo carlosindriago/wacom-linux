@@ -1,26 +1,25 @@
 #!/bin/bash
-# Configuración ZURDO para Wacom One en MX-LXDE
-# Dispositivo: Wacom One by Wacom S Pen stylus
+# Wacom Configuration Script (Dynamic Version)
 
-# Buscamos el nombre exacto del Stylus para no depender de IDs
-DEVICE="Wacom One by Wacom S Pen stylus"
+# Cargar settings si existen, si no, usar valores por defecto
+SETTINGS_FILE="$HOME/.wacom_settings.env"
 
-chmod +x /home/carlos/.wacom_toggle.sh
+if [ -f "$SETTINGS_FILE" ]; then
+    source "$SETTINGS_FILE"
+else
+    # Default values (Zurdo mode)
+    DEVICE_NAME="Wacom One by Wacom S Pen stylus"
+    ROTATION="half"
+    BUTTON_2="3"
+    BUTTON_3="key F12"
+    SCREEN="LVDS-1"
+    PRESSURE_CURVE="0 20 80 100"
+fi
 
-# 1. ROTACIÓN: 180 grados para zurdos (half)
-xsetwacom --set "$DEVICE" Rotate half
-
-# 2. BOTÓN 2 (Abajo): Click Derecho (Número 3 en X11)
-xsetwacom --set "$DEVICE" button 2 3
-
-# 3. BOTÓN 3 (Arriba): Cambiar de modo (Usamos una tecla fantasma para el script)
-xsetwacom --set "$DEVICE" button 3 "key F12"
-
-# 4. SENSIBILIDAD: Presión suave
-xsetwacom --set "$DEVICE" PressureCurve 0 20 80 100
-
-# 5. MAPEO: Que el área de dibujo coincida con tu pantalla LVDS-1
-xsetwacom --set "$DEVICE" MapToOutput LVDS-1
-
-# 6. MODO INICIAL: Absoluto (Tableta)
-xsetwacom --set "$DEVICE" Mode Absolute
+# Aplicar configuración
+xsetwacom --set "$DEVICE_NAME" Rotate "$ROTATION"
+xsetwacom --set "$DEVICE_NAME" button 2 "$BUTTON_2"
+xsetwacom --set "$DEVICE_NAME" button 3 "$BUTTON_3"
+xsetwacom --set "$DEVICE_NAME" PressureCurve "$PRESSURE_CURVE"
+xsetwacom --set "$DEVICE_NAME" MapToOutput "$SCREEN"
+xsetwacom --set "$DEVICE_NAME" Mode Absolute
