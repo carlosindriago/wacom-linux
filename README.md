@@ -1,40 +1,40 @@
-# ✍️ Wacom Linux Tool (Universal Setup)
+# ✍️ Wacom Linux Tool (Professional TUI Edition)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Wacom Linux CI](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux-lightgrey.svg)](https://kernel.org)
 
-An automated, professional configuration suite for **Wacom One (CTL-472)** on Linux environments. Features an interactive wizard and universal desktop support (GNOME, KDE, XFCE, LXDE, and more).
+A professional, automated configuration suite for **Wacom One (CTL-472)** on Linux environments. Features a high-quality **Terminal User Interface (TUI)** for easy customization and universal desktop support.
 
 ---
 
 ## 🌟 Key Features
 
-- **🚀 Multi-Desktop Support:** Works on any desktop environment using XDG Autostart standards.
+- **🖥️ Professional TUI Installer:** Built with `whiptail` for a guided, menu-driven installation experience.
+- **🚀 Multi-Desktop Support:** Works on any desktop environment (GNOME, KDE, XFCE, LXDE) using XDG Autostart standards.
 - **🔄 Universal Orientation:** Support for both Left-Handed (180° rotation) and Right-Handed users.
 - **🔌 Plug & Play Persistence:** Custom `udev` rules apply your saved settings instantly upon connection.
-- **⌨️ Interactive Wizard:** Easily configure pen buttons (Right Click, Middle Click, Undo, Mode Toggle).
-- **🎯 Smart Mapping:** Visual detection of active monitors for precise tablet-to-screen mapping.
+- **⌨️ Customizable Mappings:** Interactive configuration for pen buttons and screen mapping.
 
 ---
 
 ## 🚀 Quick Start
 
 ### 1. Prerequisites
-Ensure you have the Wacom X11 drivers and `libnotify` installed:
+Ensure you have the Wacom X11 drivers and `whiptail` installed:
 ```bash
-sudo apt update && sudo apt install xserver-xorg-input-wacom libnotify-bin
+sudo apt update && sudo apt install xserver-xorg-input-wacom libnotify-bin whiptail
 ```
 
 ### 2. Installation & Configuration
-Clone the repository and run the interactive installer:
+Clone the repository and run the professional TUI installer:
 ```bash
 git clone https://github.com/carlosindriago/wacom-linux.git
 cd wacom-linux
 chmod +x install.sh
 ./install.sh
 ```
-The installer will automatically detect your desktop environment and provide specific instructions for setting up the mode-toggle button.
+Follow the visual prompts to configure your tablet preferences.
 
 ### 3. Uninstallation
 To remove all scripts, configurations, and system rules:
@@ -42,7 +42,6 @@ To remove all scripts, configurations, and system rules:
 chmod +x uninstall.sh
 ./uninstall.sh
 ```
-This will clean up your home directory and system rules.
 
 ---
 
