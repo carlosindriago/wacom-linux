@@ -35,6 +35,14 @@ chmod +x install.sh
 ```
 The installer will automatically detect your desktop environment and provide specific instructions for setting up the mode-toggle button.
 
+### 3. Uninstallation
+To remove all scripts, configurations, and system rules:
+```bash
+chmod +x uninstall.sh
+./uninstall.sh
+```
+This will clean up your home directory and system rules.
+
 ---
 
 ## 🧪 Testing
