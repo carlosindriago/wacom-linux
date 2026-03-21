@@ -1,6 +1,6 @@
 #!/bin/bash
-# 🎨 Wacom Linux Tool - Universal Installer
-# Optimized for Wacom One (CTL-472) - Supports Left/Right handed users
+# 🎨 Wacom Linux Tool - Universal Installer (Multi-DE Support)
+# Optimized for Wacom One (CTL-472)
 
 set -e
 
@@ -8,12 +8,13 @@ set -e
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
+RED='\033[0;31m'
 NC='\033[0m'
 
 SETTINGS_FILE="$HOME/.wacom_settings.env"
 
 echo -e "${BLUE}====================================================${NC}"
-echo -e "${GREEN}   🚀 WACOM LINUX CUSTOMIZER (Open Source)          ${NC}"
+echo -e "${GREEN}   🚀 WACOM LINUX CUSTOMIZER (Universal Edition)    ${NC}"
 echo -e "${BLUE}====================================================${NC}"
 
 # --- CONFIGURATION WIZARD ---
@@ -65,22 +66,59 @@ SCREEN="$SCREEN_NAME"
 PRESSURE_CURVE="0 20 80 100"
 EOF
 
-echo -e "\n${GREEN}✅ Configuración guardada en $SETTINGS_FILE${NC}"
-
 # --- SYSTEM INSTALLATION ---
 
-echo -e "\n${BLUE}[1/3] Instalando scripts...${NC}"
+echo -e "\n${BLUE}[1/3] Instalando scripts en $HOME...${NC}"
 cp .wacom_config.sh .wacom_toggle.sh .wacom_udev_trigger.sh "$HOME/"
 chmod +x "$HOME"/.wacom_*.sh
 
-echo -e "\n${BLUE}[2/3] Configurando udev (requiere sudo)...${NC}"
+echo -e "\n${BLUE}[2/3] Configurando persistencia (udev rule)...${NC}"
 RULE_PATH="/etc/udev/rules.d/99-wacom.rules"
 echo 'ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="056a", ATTR{idProduct}=="037a", RUN+="'"$HOME"/.wacom_udev_trigger.sh'"' | sudo tee "$RULE_PATH" > /dev/null
 sudo udevadm control --reload-rules && sudo udevadm trigger
 
-echo -e "\n${BLUE}[3/3] Aplicando configuración ahora...${NC}"
-"$HOME/.wacom_config.sh"
+echo -e "\n${BLUE}[3/3] Configurando Inicio Automático Universal (XDG)...${NC}"
+mkdir -p "$HOME/.config/autostart"
+cat <<EOF > "$HOME/.config/autostart/wacom-config.desktop"
+[Desktop Entry]
+Type=Application
+Exec=$HOME/.wacom_config.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=Wacom Config
+Name=Wacom Config
+Comment=Apply custom Wacom settings on login
+EOF
+echo "✅ Archivo .desktop creado en ~/.config/autostart/"
 
-echo -e "\n${GREEN}====================================================${NC}"
-echo -e "${GREEN}   🎉 ¡TODO LISTO! Wacom configurada y persistente. ${NC}"
+# --- DESKTOP ENVIRONMENT DETECTION ---
+DE=${XDG_CURRENT_DESKTOP:-Unknown}
+echo -e "\n${BLUE}====================================================${NC}"
+echo -e "${YELLOW}🔍 DETECTADO ENTORNO: $DE${NC}"
+echo -e "Para activar el botón de 'Toggle', configurá el atajo de teclado:"
+
+case "$DE" in
+    *GNOME*)
+        echo "Go to: Settings -> Keyboard -> Keyboard Shortcuts -> Custom Shortcuts"
+        echo "Command: $HOME/.wacom_toggle.sh | Key: F12"
+        ;;
+    *KDE*)
+        echo "Go to: System Settings -> Shortcuts -> Custom Shortcuts"
+        echo "Action: $HOME/.wacom_toggle.sh | Shortcut: F12"
+        ;;
+    *XFCE*)
+        echo "Go to: Settings -> Keyboard -> Application Shortcuts"
+        echo "Command: $HOME/.wacom_toggle.sh | Key: F12"
+        ;;
+    *LXDE*)
+        echo "Edit: ~/.config/openbox/lxde-rc.xml"
+        echo "Add <keybind key='F12'> with action Execute command $HOME/.wacom_toggle.sh"
+        ;;
+    *)
+        echo "Configure a Custom Shortcut for F12 to run: $HOME/.wacom_toggle.sh"
+        ;;
+esac
+
+echo -e "\n${GREEN}🎉 ¡INSTALACIÓN COMPLETADA!${NC}"
 echo -e "${BLUE}====================================================${NC}"

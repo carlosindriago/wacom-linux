@@ -2,19 +2,48 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux-lightgrey.svg)](https://kernel.org)
-[![Maintainer: carlosindriago](https://img.shields.io/badge/Maintainer-carlosindriago-blue.svg)](https://github.com/carlosindriago)
 
-An automated, professional configuration suite for **Wacom One (CTL-472)** on Linux environments. Features an interactive wizard to customize orientation (Left/Right handed), button mappings, and display settings with persistent plug-and-play support.
+An automated, professional configuration suite for **Wacom One (CTL-472)** on Linux environments. Features an interactive wizard and universal desktop support (GNOME, KDE, XFCE, LXDE, and more).
 
 ---
 
 ## 🌟 Key Features
 
+- **🚀 Multi-Desktop Support:** Works on any desktop environment using XDG Autostart standards.
 - **🔄 Universal Orientation:** Support for both Left-Handed (180° rotation) and Right-Handed users.
 - **🔌 Plug & Play Persistence:** Custom `udev` rules apply your saved settings instantly upon connection.
 - **⌨️ Interactive Wizard:** Easily configure pen buttons (Right Click, Middle Click, Undo, Mode Toggle).
 - **🎯 Smart Mapping:** Visual detection of active monitors for precise tablet-to-screen mapping.
-- **🛠️ Persistent Profiles:** Settings are stored in `~/.wacom_settings.env` for easy manual adjustment or restoration.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Prerequisites
+Ensure you have the Wacom X11 drivers and `libnotify` installed:
+```bash
+sudo apt update && sudo apt install xserver-xorg-input-wacom libnotify-bin
+```
+
+### 2. Installation & Configuration
+Clone the repository and run the interactive installer:
+```bash
+git clone https://github.com/carlosindriago/wacom-linux.git
+cd wacom-linux
+chmod +x install.sh
+./install.sh
+```
+The installer will automatically detect your desktop environment and provide specific instructions for setting up the mode-toggle button.
+
+---
+
+## 🛠️ Technical Deep Dive
+
+### Universal Autostart
+Instead of environment-specific configuration files, this tool uses the **XDG Autostart specification**. By placing a `.desktop` file in `~/.config/autostart/`, your settings are applied on login regardless of whether you use GNOME, KDE, XFCE, or LXDE.
+
+### Desktop-Specific Shortcuts
+The mode-toggle script (`.wacom_toggle.sh`) is triggered by an internal key event (default `F12`). The installer provides instructions on how to bind this key in popular Desktop Environments.
 
 ---
 
