@@ -1,20 +1,50 @@
-# ✍️ Wacom Linux Tool (Professional TUI Edition)
+# ✍️ Wacom Linux Tool (Universal & Multi-Monitor Edition)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Wacom Linux CI](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml)
-[![Platform: Linux](https://img.shields.io/badge/Platform-Linux-lightgrey.svg)](https://kernel.org)
 
-A professional, automated configuration suite for **Wacom One (CTL-472)** on Linux environments. Features a high-quality **Terminal User Interface (TUI)** for easy customization and universal desktop support.
+A professional, automated configuration suite for **ANY Wacom Tablet** on Linux. Features dynamic device detection, advanced multi-monitor mapping, and a professional TUI installer.
 
 ---
 
 ## 🌟 Key Features
 
-- **🖥️ Professional TUI Installer:** Built with `whiptail` for a guided, menu-driven installation experience.
-- **🚀 Multi-Desktop Support:** Works on any desktop environment (GNOME, KDE, XFCE, LXDE) using XDG Autostart standards.
-- **🔄 Universal Orientation:** Support for both Left-Handed (180° rotation) and Right-Handed users.
-- **🔌 Plug & Play Persistence:** Custom `udev` rules apply your saved settings instantly upon connection.
-- **⌨️ Customizable Mappings:** Interactive configuration for pen buttons and screen mapping.
+- **🚀 Universal Device Support:** Automatically detects any Wacom stylus device (Intuos, One, Pro, etc.) using dynamic X11 sensing.
+- **🖥️ Multi-Monitor Mapping:** Choose to map your tablet to a specific monitor or the entire extended desktop.
+- **🔌 Vendor-Level Persistence:** Custom `udev` rules detect any Wacom hardware by Vendor ID (`056a`) for instant configuration.
+- **🖱️ Tablet/Mouse Mode Toggle:** Seamlessly switch between absolute (drawing) and relative (navigation) modes.
+- **🛠️ Professional TUI:** Interactive installer built with `whiptail` for a guided experience.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Prerequisites
+Ensure you have the Wacom X11 drivers and `whiptail` installed:
+```bash
+sudo apt update && sudo apt install xserver-xorg-input-wacom libnotify-bin whiptail x11-xserver-utils
+```
+
+### 2. Installation & Configuration
+```bash
+git clone https://github.com/carlosindriago/wacom-linux.git
+cd wacom-linux
+chmod +x install.sh
+./install.sh
+```
+The installer will list your active monitors and let you choose the mapping target.
+
+---
+
+## 🧪 Advanced Features
+
+### Dynamic Hardware Discovery
+Unlike static scripts, this tool queries the X11 subsystem to find the active STYLUS device name. This means you can swap Wacom models without re-running the installer; the system will adapt to the new hardware automatically on the next connection.
+
+### Screen Mapping Logic
+You can map the tablet's active area to:
+- **Individual Monitor:** (e.g., `HDMI-1`, `LVDS-1`) for precise drawing.
+- **Full Desktop:** Map across all connected monitors (ideal for large multi-head setups).
 
 ---
 

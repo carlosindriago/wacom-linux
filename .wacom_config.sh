@@ -1,26 +1,43 @@
 #!/bin/bash
-# Wacom Configuration Script (Dynamic Version)
+# Wacom Configuration Script - UNIVERSAL & DYNAMIC VERSION
 
-# Cargar settings si existen, si no, usar valores por defecto
-# Permitimos configurar la ruta para testing, por defecto en el HOME
+# Cargar settings si existen
 SETTINGS_FILE="${SETTINGS_FILE:-$HOME/.wacom_settings.env}"
+[ -f "$SETTINGS_FILE" ] && source "$SETTINGS_FILE"
 
-if [ -f "$SETTINGS_FILE" ]; then
-    source "$SETTINGS_FILE"
-else
-    # Default values (Zurdo mode)
-    DEVICE_NAME="Wacom One by Wacom S Pen stylus"
-    ROTATION="half"
-    BUTTON_2="3"
-    BUTTON_3="key F12"
-    SCREEN="LVDS-1"
-    PRESSURE_CURVE="0 20 80 100"
+# --- DETECCIÓN DINÁMICA DE HARDWARE ---
+# Buscamos el primer dispositivo de tipo STYLUS que nos devuelva xsetwacom
+DEVICE_NAME=$(xsetwacom --list devices | grep -i 'STYLUS' | cut -f 1 | xargs)
+
+if [ -z "$DEVICE_NAME" ]; then
+    echo "⚠️ No se detectó ninguna tableta Wacom conectada."
+    exit 0
 fi
 
-# Aplicar configuración
+# Valores por defecto si no existen en el .env
+ROTATION="${ROTATION:-none}"
+BUTTON_2="${BUTTON_2:-3}"
+BUTTON_3="${BUTTON_3:-key F12}"
+SCREEN="${SCREEN:-next}" # 'next' es un comando especial de xsetwacom o el nombre de la pantalla
+PRESSURE_CURVE="${PRESSURE_CURVE:-0 20 80 100}"
+
+# --- APLICAR CONFIGURACIÓN ---
+echo "Configurando dispositivo: $DEVICE_NAME"
+
 xsetwacom --set "$DEVICE_NAME" Rotate "$ROTATION"
 xsetwacom --set "$DEVICE_NAME" button 2 "$BUTTON_2"
 xsetwacom --set "$DEVICE_NAME" button 3 "$BUTTON_3"
 xsetwacom --set "$DEVICE_NAME" PressureCurve "$PRESSURE_CURVE"
-xsetwacom --set "$DEVICE_NAME" MapToOutput "$SCREEN"
+
+# Manejo de mapeo de pantalla
+if [ "$SCREEN" == "ALL" ]; then
+    # Reseteamos el mapeo para que use todo el escritorio
+    xsetwacom --set "$DEVICE_NAME" MapToOutput "desktop"
+else
+    xsetwacom --set "$DEVICE_NAME" MapToOutput "$SCREEN"
+fi
+
 xsetwacom --set "$DEVICE_NAME" Mode Absolute
+
+# Notificación visual
+notify-send "Wacom Configurada" "Modelo: $DEVICE_NAME\nModo: $ROTATION\nPantalla: $SCREEN" --icon=input-tablet
