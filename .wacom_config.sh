@@ -2,7 +2,8 @@
 # Wacom Configuration Script (Dynamic Version)
 
 # Cargar settings si existen, si no, usar valores por defecto
-SETTINGS_FILE="$HOME/.wacom_settings.env"
+# Permitimos configurar la ruta para testing, por defecto en el HOME
+SETTINGS_FILE="${SETTINGS_FILE:-$HOME/.wacom_settings.env}"
 
 if [ -f "$SETTINGS_FILE" ]; then
     source "$SETTINGS_FILE"

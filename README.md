@@ -37,7 +37,21 @@ The installer will automatically detect your desktop environment and provide spe
 
 ---
 
-## 🛠️ Technical Deep Dive
+## 🧪 Testing
+
+This project includes a test suite to ensure configuration logic and system integration are correct.
+
+### 1. Unit Tests (Logic Validation)
+Verify that the configuration scripts generate the correct `xsetwacom` commands without needing the hardware connected:
+```bash
+./tests/test_logic.sh
+```
+
+### 2. System Verification (Post-Install)
+After running the installer, you can verify that all files, permissions, and udev rules are correctly placed in your system:
+```bash
+./tests/verify_install.sh
+```
 
 ### Universal Autostart
 Instead of environment-specific configuration files, this tool uses the **XDG Autostart specification**. By placing a `.desktop` file in `~/.config/autostart/`, your settings are applied on login regardless of whether you use GNOME, KDE, XFCE, or LXDE.
