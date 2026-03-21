@@ -1,6 +1,7 @@
 # ✍️ Wacom Linux Tool (Universal Setup)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Wacom Linux CI](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux-lightgrey.svg)](https://kernel.org)
 
 An automated, professional configuration suite for **Wacom One (CTL-472)** on Linux environments. Features an interactive wizard and universal desktop support (GNOME, KDE, XFCE, LXDE, and more).
