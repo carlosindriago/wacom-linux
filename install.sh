@@ -6,7 +6,6 @@ set -e
 
 # Colors for non-TUI output
 BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
 NC='\033[0m'
 
 SETTINGS_FILE="$HOME/.wacom_settings.env"
@@ -59,6 +58,7 @@ for s in $SCREENS; do
     SCREEN_LIST="$SCREEN_LIST $s Monitor_Individual"
 done
 
+# shellcheck disable=SC2086
 SCREEN_NAME=$(whiptail --title "$TITLE" --menu "Mapeo de Pantalla:\n¿A qué monitor quieres vincular tu tableta?" 15 70 6 $SCREEN_LIST 3>&1 1>&2 2>&3)
 
 if [ -z "$SCREEN_NAME" ]; then SCREEN_NAME="ALL"; fi
