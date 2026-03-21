@@ -3,6 +3,7 @@
 
 # Cargar settings si existen
 SETTINGS_FILE="${SETTINGS_FILE:-$HOME/.wacom_settings.env}"
+# shellcheck source=/dev/null
 [ -f "$SETTINGS_FILE" ] && source "$SETTINGS_FILE"
 
 # --- DETECCIÓN DINÁMICA DE HARDWARE ---

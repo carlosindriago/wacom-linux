@@ -5,9 +5,7 @@
 set -e
 
 # Colors
-GREEN='\033[0;32m'
 BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
@@ -15,7 +13,7 @@ echo -e "${BLUE}====================================================${NC}"
 echo -e "${RED}   🗑️  DESINSTALADOR WACOM LINUX TOOL              ${NC}"
 echo -e "${BLUE}====================================================${NC}"
 
-read -p "¿Estás seguro de que deseas eliminar toda la configuración? [s/N]: " confirm
+read -rp "¿Estás seguro de que deseas eliminar toda la configuración? [s/N]: " confirm
 if [[ ! $confirm =~ ^[Ss]$ ]]; then
     echo "Operación cancelada."
     exit 0
