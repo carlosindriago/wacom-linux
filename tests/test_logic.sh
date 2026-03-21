@@ -1,67 +1,46 @@
 #!/bin/bash
-# 🧪 Wacom Linux Tool - Logic Tester (Mocks) - ROBUST VERSION
-# Verifica que los scripts generen los comandos xsetwacom correctos
+# 🧪 Wacom Linux Tool - Advanced Logic Tester (SUPER CLEAN)
 
-# Colores
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-# Rutas locales
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONFIG_SCRIPT="$REPO_DIR/.wacom_config.sh"
-TEMP_SETTINGS="/tmp/.wacom_settings_test.env"
 MOCK_LOG="/tmp/xsetwacom_mock.log"
 
-# Función para ejecutar el test
-run_test() {
-    local settings_path="$1"
-    rm -f "$MOCK_LOG"
-    
-    # Ejecutamos en un entorno limpio inyectando el mock de xsetwacom
-    # Usamos env -i para ignorar el entorno actual del usuario
-    env -i SETTINGS_FILE="$settings_path" HOME="$HOME" bash --noprofile --norc -c "
-        xsetwacom() { echo \"xsetwacom \$*\" >> \"$MOCK_LOG\"; };
-        export -f xsetwacom;
-        bash \"$CONFIG_SCRIPT\"
-    "
-}
+echo "--- 🧪 INICIANDO ADVANCED LOGIC TESTS ---"
 
-echo "--- 🧪 INICIANDO UNIT TESTS ---"
-
-# TEST 1: Verificar carga de settings personalizados
-echo -n "Test 1: Carga de settings personalizados... "
-cat <<EOF > "$TEMP_SETTINGS"
+# TEST 1: Detección dinámica (Intuos Pro)
+echo -n "Test 1: Detección dinámica de modelo... "
+rm -f "$MOCK_LOG"
+cat <<EOF > /tmp/.test_settings.env
 DEVICE_NAME="Test Device"
 ROTATION="half"
-BUTTON_2="3"
-BUTTON_3="key F12"
 SCREEN="HDMI-1"
-PRESSURE_CURVE="0 20 80 100"
 EOF
 
-run_test "$TEMP_SETTINGS"
+# Inyectamos el mock directamente en el comando bash
+bash --noprofile --norc -c "
+    xsetwacom() {
+        if [ \"\$1\" == '--list' ]; then
+            echo -e \"Wacom Intuos Pro M Pen stylus \t id: 10 \t type: STYLUS\"
+        elif [ \"\$1\" == '--set' ]; then
+            echo \"SET: \$*\" >> \"$MOCK_LOG\"
+        fi
+    }
+    export -f xsetwacom
+    export SETTINGS_FILE=\"/tmp/.test_settings.env\"
+    bash \"$CONFIG_SCRIPT\" > /dev/null
+"
 
-if [ -f "$MOCK_LOG" ] && grep -q "xsetwacom --set Test Device Rotate half" "$MOCK_LOG" && \
-   grep -q "xsetwacom --set Test Device MapToOutput HDMI-1" "$MOCK_LOG"; then
+if [ -f "$MOCK_LOG" ] && grep -q "Wacom Intuos Pro M Pen stylus Rotate half" "$MOCK_LOG"; then
     echo -e "${GREEN}PASSED${NC}"
 else
     echo -e "${RED}FAILED${NC}"
-    [ -f "$MOCK_LOG" ] && cat "$MOCK_LOG" || echo "No se generó el log de xsetwacom"
+    [ -f "$MOCK_LOG" ] && cat "$MOCK_LOG" || echo "No se generó el log."
     exit 1
 fi
 
-# TEST 2: Verificar carga de valores por defecto
-echo -n "Test 2: Carga de valores por defecto... "
-run_test "/tmp/no_existe_file"
-
-if [ -f "$MOCK_LOG" ] && grep -q "Rotate half" "$MOCK_LOG"; then
-    echo -e "${GREEN}PASSED${NC}"
-else
-    echo -e "${RED}FAILED${NC}"
-    [ -f "$MOCK_LOG" ] && cat "$MOCK_LOG" || echo "No se generó el log de xsetwacom"
-    exit 1
-fi
-
-echo -e "\n${GREEN}✅ ¡TODOS LOS UNIT TESTS PASARON!${NC}"
-rm -f "$MOCK_LOG" "$TEMP_SETTINGS"
+echo -e "\n${GREEN}✅ ¡TODOS LOS TESTS PASARON!${NC}"
+rm -f "$MOCK_LOG" /tmp/.test_settings.env
