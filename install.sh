@@ -1,5 +1,5 @@
 #!/bin/bash
-# 🎨 Wacom Linux Tool - Universal Installer (Multi-DE Support)
+# 🎨 Wacom Linux Tool - Universal Installer (Dependency-Aware)
 # Optimized for Wacom One (CTL-472)
 
 set -e
@@ -16,6 +16,39 @@ SETTINGS_FILE="$HOME/.wacom_settings.env"
 echo -e "${BLUE}====================================================${NC}"
 echo -e "${GREEN}   🚀 WACOM LINUX CUSTOMIZER (Universal Edition)    ${NC}"
 echo -e "${BLUE}====================================================${NC}"
+
+# --- DEPENDENCY CHECK ---
+echo -e "\n${BLUE}[0/4] Verificando dependencias del sistema...${NC}"
+
+check_and_install() {
+    local cmd=$1
+    local package=$2
+    if ! command -v "$cmd" &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Falta la dependencia: $package (comando: $cmd)${NC}"
+        read -p "¿Deseas instalarla ahora? (requiere sudo) [S/n]: " yn
+        case $yn in
+            [Nn]*) echo -e "${RED}❌ Abortando: Se necesitan las dependencias para continuar.${NC}"; exit 1 ;;
+            *) 
+                echo -e "${BLUE}Instalando $package...${NC}"
+                sudo apt update && sudo apt install -y "$package"
+                ;;
+        esac
+    else
+        echo -e "✅ $package ya está instalado."
+    fi
+}
+
+# Verificamos los componentes clave
+if command -v apt &> /dev/null; then
+    check_and_install "xsetwacom" "xserver-xorg-input-wacom"
+    check_and_install "notify-send" "libnotify-bin"
+    check_and_install "xrandr" "x11-xserver-utils"
+else
+    echo -e "${YELLOW}⚠️  No se detectó un sistema basado en APT. Asegúrate de tener instalados:${NC}"
+    echo "   - xserver-xorg-input-wacom"
+    echo "   - libnotify-bin"
+    echo "   - x11-xserver-utils"
+fi
 
 # --- CONFIGURATION WIZARD ---
 
