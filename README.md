@@ -1,9 +1,9 @@
 # ✍️ Wacom Linux Tool (X11 & Multi-Monitor Edition)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Wacom Linux CI](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml)
+[![Wacom Linux CI](https://github.com/carlosindliago/wacom-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml)
 
-A professional, automated configuration suite for **ANY Wacom Tablet** on Linux. Features dynamic device detection, advanced multi-monitor mapping, and an interactive TUI installer.
+A professional, automated configuration suite for **ANY Wacom Tablet** on Linux. Features dynamic device detection, advanced multi-monitor mapping, an interactive TUI installer, and a **modern Electron Dashboard GUI**.
 
 > ⚠️ **CRITICAL REQUIREMENT: X11 ONLY**
 > This tool relies on `xsetwacom` and `xrandr`. It **DOES NOT** support Wayland (which is the default in modern GNOME and KDE). If you are on Wayland, this script will not work. Wayland support via adapter pattern is planned for a future release.
@@ -12,11 +12,13 @@ A professional, automated configuration suite for **ANY Wacom Tablet** on Linux.
 
 ## 🌟 Key Features
 
+- **🖥️ Modern Dashboard GUI:** Electron-based dashboard with dark mode, real-time configuration, and visual pressure curve preview.
 - **🚀 Universal Device Support (X11):** Automatically detects any Wacom stylus device (Intuos, One, Pro, etc.) using dynamic X11 sensing.
 - **🖥️ Multi-Monitor Mapping:** Choose to map your tablet to a specific monitor or the entire extended desktop.
 - **🔌 Vendor-Level Persistence:** Custom `udev` rules detect any Wacom hardware by Vendor ID (`056a`) for instant configuration.
 - **🖱️ Tablet/Mouse Mode Toggle:** Seamlessly switch between absolute (drawing) and relative (navigation) modes.
 - **🛠️ Professional TUI:** Interactive installer built with `whiptail` for a guided experience.
+- **✏️ 60+ Button Actions:** Comprehensive button mapping with categorized options for tools, editing, navigation, and more.
 
 ---
 
@@ -45,12 +47,49 @@ chmod +x install.sh
 ```
 Follow the visual prompts to configure your tablet preferences. The installer will list your active monitors and let you choose the mapping target.
 
-### 4. Uninstallation
+### 4. Dashboard GUI (Optional)
+Launch the modern Electron dashboard for real-time configuration:
+```bash
+cd dashboard
+npm install
+npm run dev
+```
+
+### 5. Uninstallation
 To remove all scripts, configurations, and system rules:
 ```bash
 chmod +x uninstall.sh
 ./uninstall.sh
 ```
+
+---
+
+## 🖥️ Dashboard GUI Features
+
+The Electron dashboard provides a modern, user-friendly interface for Wacom tablet configuration:
+
+### Interface
+- **Dark Mode Elegance:** Professional dark theme with subtle gradients and modern styling
+- **Frameless Window:** Custom title bar without system menus
+- **Scrollable Content:** Smooth scrolling for all configuration options
+- **Real-time Updates:** Device connection status and configuration changes
+
+### Configuration Options
+- **Orientation:** Normal, Rotated 90°, Rotated -90°, Flipped 180°
+- **Positioning Mode:** Absolute (drawing) or Relative (mouse-like)
+- **Screen Mapping:** All monitors or specific display selection
+- **Pressure Curve:** 5 presets with visual SVG preview
+
+### Button Mapping (60+ Actions)
+Organized by categories:
+- **Mouse:** Clicks, scroll, navigation buttons
+- **Editing:** Undo, redo, copy, paste, save
+- **View:** Zoom controls, fullscreen
+- **Tools:** Brush, eraser, pan, fill, select
+- **System:** Alt+Tab, close window, escape
+- **Brush Size:** Increase/decrease size and opacity
+- **Layers:** Layer selection 1-5, new layer, merge
+- **Special:** No action, disabled
 
 ---
 
@@ -81,6 +120,18 @@ The mode-toggle script (`.wacom_toggle.sh`) is triggered by an internal key even
 ├── .wacom_config.sh        # Core configuration (Loads dynamic settings)
 ├── .wacom_toggle.sh        # Tablet/Mouse mode switcher logic
 ├── .wacom_udev_trigger.sh  # Bridge script for system-level udev events
+├── dashboard/              # Electron Dashboard GUI
+│   ├── src/
+│   │   ├── main/           # Electron main process + IPC handlers
+│   │   │   └── services/   # WacomService, ConfigService
+│   │   ├── preload/        # IPC bridge (contextBridge)
+│   │   ├── renderer/       # React UI components
+│   │   │   ├── components/ # WacomDashboard
+│   │   │   ├── store/      # Zustand state management
+│   │   │   └── styles/     # Tailwind CSS
+│   │   └── shared/         # Shared types and contracts
+│   ├── package.json
+│   └── tailwind.config.js
 ├── LICENSE                 # MIT License
 └── README.md               # Documentation
 ```
