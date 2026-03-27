@@ -10,6 +10,24 @@ A professional, automated configuration suite for **ANY Wacom Tablet** on Linux.
 
 ---
 
+## ⚡ Instalación Rápida (Un Comando)
+
+```bash
+# Con wget
+wget -qO- https://raw.githubusercontent.com/carlosindriago/wacom-linux/main/setup.sh | bash
+
+# O con curl
+curl -fsSL https://raw.githubusercontent.com/carlosindriago/wacom-linux/main/setup.sh | bash
+```
+
+Esto instalará automáticamente:
+- ✅ Scripts de configuración universal
+- ✅ Integración con tu sesión X11
+- ✅ Atajos de teclado para XFCE/Openbox
+- ✅ Dashboard GUI (opcional)
+
+---
+
 ## 🌟 Key Features
 
 - **🖥️ Modern Dashboard GUI:** Electron-based dashboard with dark mode, real-time configuration, and visual pressure curve preview.
@@ -31,26 +49,24 @@ echo $XDG_SESSION_TYPE
 ```
 *(It must output `x11`)*
 
-### 2. Prerequisites
-Ensure you have the Wacom X11 drivers and `whiptail` installed:
+### 2. One-Line Installation
 ```bash
-sudo apt update && sudo apt install xserver-xorg-input-wacom libnotify-bin whiptail x11-xserver-utils
+wget -qO- https://raw.githubusercontent.com/carlosindriago/wacom-linux/main/setup.sh | bash
 ```
 
-### 3. Installation & Configuration
-Clone the repository and run the professional TUI installer:
+### 3. Manual Installation (Alternative)
+If you prefer manual installation:
 ```bash
 git clone https://github.com/carlosindriago/wacom-linux.git
 cd wacom-linux
 chmod +x install.sh
 ./install.sh
 ```
-Follow the visual prompts to configure your tablet preferences. The installer will list your active monitors and let you choose the mapping target.
 
 ### 4. Dashboard GUI (Optional)
 Launch the modern Electron dashboard for real-time configuration:
 ```bash
-cd dashboard
+cd ~/.wacom-linux/dashboard
 npm install
 npm run dev
 ```
