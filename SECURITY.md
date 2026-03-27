@@ -14,7 +14,7 @@ We take the security of Wacom Linux seriously. If you have discovered a security
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-Instead, please report them via email to: [carlosindriago@gmail.com]
+Instead, please report them via email to: [cindriagordev@gmail.com]
 
 You should receive a response within 48 hours. If you do not receive a response within that timeframe, please follow up to ensure we received your message.
 
