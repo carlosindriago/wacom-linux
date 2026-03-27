@@ -16,8 +16,9 @@ echo "--- 🧪 INICIANDO ADVANCED LOGIC TESTS ---"
 echo -n "Test 1: Detección dinámica de modelo... "
 rm -f "$MOCK_LOG"
 
-# Create settings file with test values
-cat > /tmp/.test_settings.env << 'EOF'
+# Create settings file in the CORRECT location ($HOME/.wacom_settings.env)
+# The config script calculates: SETTINGS_FILE="$USER_HOME/.wacom_settings.env"
+cat > "$HOME/.wacom_settings.env" << 'EOF'
 ROTATION="half"
 BUTTON_2="3"
 BUTTON_3="key F10"
@@ -28,6 +29,7 @@ EOF
 # Create mock runner script
 cat > /tmp/mock_runner.sh << 'MOCKSCRIPT'
 #!/bin/bash
+
 # Mock xsetwacom - captures all calls
 xsetwacom() {
     case "$1" in
@@ -50,8 +52,6 @@ notify-send() {
 
 export -f xsetwacom
 export -f notify-send
-export SETTINGS_FILE="/tmp/.test_settings.env"
-export USER_HOME="$HOME"
 
 # Source the config script
 source "$1"
@@ -69,9 +69,9 @@ else
     echo -e "${RED}FAILED${NC}"
     echo "Expected: Rotate half"
     [ -f "$MOCK_LOG" ] && cat "$MOCK_LOG" || echo "No se generó el log."
-    rm -f "$MOCK_LOG" /tmp/.test_settings.env /tmp/mock_runner.sh
+    rm -f "$MOCK_LOG" "$HOME/.wacom_settings.env" /tmp/mock_runner.sh
     exit 1
 fi
 
 echo -e "\n${GREEN}✅ ¡TODOS LOS TESTS PASARON!${NC}"
-rm -f "$MOCK_LOG" /tmp/.test_settings.env /tmp/mock_runner.sh
+rm -f "$MOCK_LOG" "$HOME/.wacom_settings.env" /tmp/mock_runner.sh
