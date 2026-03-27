@@ -10,3 +10,9 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Dashboard (Electron)
+dashboard/node_modules/
+dashboard/dist/
+dashboard/.vite/
+dashboard/out/

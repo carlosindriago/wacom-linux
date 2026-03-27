@@ -23,9 +23,9 @@ EOF
 # Inyectamos el mock directamente en el comando bash
 bash --noprofile --norc -c "
     xsetwacom() {
-        if [ \"\$1\" == '--list' ]; then
+        if [ \"\$1\" = '--list' ]; then
             echo -e \"Wacom Intuos Pro M Pen stylus \t id: 10 \t type: STYLUS\"
-        elif [ \"\$1\" == '--set' ]; then
+        elif [ \"\$1\" = '--set' ]; then
             echo \"SET: \$*\" >> \"$MOCK_LOG\"
         fi
     }

@@ -11,7 +11,7 @@ echo -e "--- 🛠️ INICIANDO SYSTEM VERIFICATION ---\n"
 
 # 1. Verificar Scripts
 echo -n "Chequeando scripts en HOME... "
-if [ -x "$HOME/.wacom_config.sh" ] && [ -x "$HOME/.wacom_toggle.sh" ] && [ -x "$HOME/.wacom_udev_trigger.sh" ]; then
+if [ -x "$HOME/.wacom_config.sh" ] && [ -x "$HOME/.wacom_toggle.sh" ] && [ -x "$HOME/.wacom_udev_trigger.sh" ] && [ -x "$HOME/.wacom_button_logic.sh" ] && [ -x "$HOME/.wacom_rotation_toggle.sh" ]; then
     echo -e "${GREEN}OK${NC}"
 else
     echo -e "${RED}MISSING OR NO EXEC PERMISSIONS${NC}"

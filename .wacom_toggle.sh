@@ -1,15 +1,36 @@
 #!/bin/bash
-# Script para alternar entre modo Tableta (Absolute) y Mouse (Relative)
-# Dispositivo: Wacom One by Wacom S Pen stylus
+# 🖱️ Wacom Mode Toggle (Dynamic Version)
+RED='\033[0;31m'
+NC='\033[0m'
+# Alterna entre modo Tableta (Absoluto) y Mouse (Relativo)
 
-DEVICE="Wacom One by Wacom S Pen stylus"
+# 1. Cargar settings para saber el monitor preferido
+SETTINGS_FILE="$HOME/.wacom_settings.env"
+# Verify xsetwacom is available
+if ! command -v xsetwacom &> /dev/null; then
+  echo -e "${RED}❌ ERROR: 'xsetwacom' no está instalado. Instálalo con 'sudo apt install xserver-xorg-input-wacom'.${NC}"
+  exit 1
+fi
+[ -f "$SETTINGS_FILE" ] && source "$SETTINGS_FILE"
+SCREEN="${SCREEN:-ALL}"
+
+# 2. Detectar el STYLUS dinámicamente
+DEVICE=$(xsetwacom --list devices | grep -i 'STYLUS' | cut -f 1 | xargs)
+
+if [ -z "$DEVICE" ]; then
+    notify-send "Wacom" "No se detectó el lápiz para cambiar de modo." --icon=error
+    exit 1
+fi
+
+# 3. Alternar Modo
 CUR_MODE=$(xsetwacom --get "$DEVICE" Mode)
 
 if [ "$CUR_MODE" = "Absolute" ]; then
     xsetwacom --set "$DEVICE" Mode Relative
-    notify-send "Wacom" "Modo Mouse (Relativo) ACTIVADO" --icon=input-mouse
+    notify-send -t 2000 "Wacom" "<b>MODO MOUSE</b> (Relativo) 🖱️" --icon=input-mouse
 else
     xsetwacom --set "$DEVICE" Mode Absolute
-    xsetwacom --set "$DEVICE" MapToOutput LVDS-1
-    notify-send "Wacom" "Modo Tableta (Absoluto) ACTIVADO" --icon=input-tablet
+    # Re-aplicar el mapeo de pantalla para que no se pierda
+    [ "$SCREEN" = "ALL" ] && xsetwacom --set "$DEVICE" MapToOutput "desktop" || xsetwacom --set "$DEVICE" MapToOutput "$SCREEN"
+    notify-send -t 2000 "Wacom" "<b>MODO TABLETA</b> (Absoluto) ✍️" --icon=input-tablet
 fi
