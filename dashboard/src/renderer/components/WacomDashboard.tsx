@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useWacomStore } from '../store/wacomStore'
-import { Orientation, Mode, PressureCurve } from '@shared/types'
+import { Orientation, PressureCurve } from '@shared/types'
 
 // Available button actions - comprehensive list for xsetwacom
 const BUTTON_ACTIONS = [

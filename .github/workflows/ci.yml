@@ -19,7 +19,7 @@ jobs:
           ignore_names: 'GUIA_WACOM_ZURDO.md'
 
   test:
-    name: 🧪 Unit Testing
+    name: 🧪 Bash Unit Testing
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,3 +27,49 @@ jobs:
         run: chmod +x ./*.sh ./tests/*.sh
       - name: Run Logic Tests
         run: ./tests/test_logic.sh
+
+  dashboard-build:
+    name: 🖥️ Dashboard Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: dashboard/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./dashboard
+        run: npm ci
+      
+      - name: TypeScript check
+        working-directory: ./dashboard
+        run: npm run typecheck
+      
+      - name: Build
+        working-directory: ./dashboard
+        run: npm run build
+
+  dashboard-test:
+    name: 🧪 Dashboard Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: dashboard/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./dashboard
+        run: npm ci
+      
+      - name: Run tests
+        working-directory: ./dashboard
+        run: npm test -- --run

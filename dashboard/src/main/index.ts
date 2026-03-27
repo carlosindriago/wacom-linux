@@ -1,17 +1,22 @@
 import { app, BrowserWindow, ipcMain, nativeTheme } from 'electron'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { IPC_CHANNELS, ErrorCode, WacomError } from '@shared/types'
+import { IPC_CHANNELS, ErrorCode, WacomError, type DeviceInfo } from '@shared/types'
 import { WacomService } from './services/wacom-service'
 import { ConfigService } from './services/config-service'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+// Polling interval for device detection (in milliseconds)
+const DEVICE_POLL_INTERVAL = 3000
+
 class WacomDashboard {
   private mainWindow: BrowserWindow | null = null
   private wacomService: WacomService
   private configService: ConfigService
+  private devicePollInterval: NodeJS.Timeout | null = null
+  private lastDeviceInfo: DeviceInfo | null = null
 
   constructor() {
     this.wacomService = new WacomService()
@@ -21,11 +26,12 @@ class WacomDashboard {
   async initialize(): Promise<void> {
     // Initialize services first
     await this.configService.initialize()
-    
+
     await this.createWindow()
     this.setupIPC()
     this.setupEventHandlers()
-    
+    this.startDevicePolling()
+
     // Check if running on X11
     const isX11 = await this.wacomService.checkX11()
     if (!isX11) {
@@ -236,6 +242,7 @@ class WacomDashboard {
   private setupEventHandlers(): void {
     // Handle window events
     app.on('window-all-closed', () => {
+      this.stopDevicePolling()
       if (process.platform !== 'darwin') {
         app.quit()
       }
@@ -251,11 +258,75 @@ class WacomDashboard {
     nativeTheme.on('updated', () => {
       this.mainWindow?.webContents.send('theme-changed', nativeTheme.shouldUseDarkColors)
     })
+
+    // Cleanup on app quit
+    app.on('before-quit', () => {
+      this.stopDevicePolling()
+    })
   }
 
   private notifyConfigChanged(): void {
     const config = this.configService.getConfig()
     this.mainWindow?.webContents.send(IPC_CHANNELS.CONFIG_CHANGED, config)
+  }
+
+  /**
+   * Start polling for device connection/disconnection events
+   */
+  private startDevicePolling(): void {
+    // Initial device check
+    this.checkDeviceStatus()
+
+    // Set up polling interval
+    this.devicePollInterval = setInterval(() => {
+      this.checkDeviceStatus()
+    }, DEVICE_POLL_INTERVAL)
+  }
+
+  /**
+   * Stop device polling (cleanup)
+   */
+  private stopDevicePolling(): void {
+    if (this.devicePollInterval) {
+      clearInterval(this.devicePollInterval)
+      this.devicePollInterval = null
+    }
+  }
+
+  /**
+   * Check if device status changed and emit events
+   */
+  private async checkDeviceStatus(): Promise<void> {
+    try {
+      const currentDeviceInfo = await this.wacomService.refreshDevices()
+
+      // Check for connection status change
+      if (this.lastDeviceInfo !== null) {
+        const wasConnected = this.lastDeviceInfo.isConnected
+        const isNowConnected = currentDeviceInfo.isConnected
+
+        // Device connected
+        if (!wasConnected && isNowConnected) {
+          this.mainWindow?.webContents.send(IPC_CHANNELS.DEVICE_CONNECTED, currentDeviceInfo)
+          console.log('[WacomDashboard] Device connected:', currentDeviceInfo.model)
+        }
+
+        // Device disconnected
+        if (wasConnected && !isNowConnected) {
+          this.mainWindow?.webContents.send(IPC_CHANNELS.DEVICE_DISCONNECTED)
+          console.log('[WacomDashboard] Device disconnected')
+        }
+      }
+
+      // Update last known state
+      this.lastDeviceInfo = currentDeviceInfo
+    } catch (error) {
+      // If there's an error getting device info, assume disconnected
+      if (this.lastDeviceInfo?.isConnected) {
+        this.mainWindow?.webContents.send(IPC_CHANNELS.DEVICE_DISCONNECTED)
+        this.lastDeviceInfo = { ...this.lastDeviceInfo, isConnected: false }
+      }
+    }
   }
 }
 
