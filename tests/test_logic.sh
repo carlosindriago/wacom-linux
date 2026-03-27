@@ -1,5 +1,6 @@
 #!/bin/bash
 # 🧪 Wacom Linux Tool - Advanced Logic Tester (CI-Safe)
+# shellcheck disable=SC2329
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -24,47 +25,53 @@ SCREEN="ALL"
 PRESSURE_CURVE="0 20 80 100"
 EOF
 
-# Run the config script with mocked commands
-# We need to export the mock functions and run in a subshell
-(
-    # Mock xsetwacom command
-    xsetwacom() {
-        case "$1" in
-            --list)
-                echo -e "Wacom Intuos Pro M Pen stylus \t id: 10 \t type: STYLUS"
-                ;;
-            --set)
-                echo "SET: $*" >> /tmp/xsetwacom_mock.log
-                ;;
-            --get)
-                echo "Absolute"
-                ;;
-        esac
-        return 0
-    }
-    export -f xsetwacom
-    
-    # Mock notify-send (not available in CI)
-    notify-send() {
-        return 0
-    }
-    export -f notify-send
-    
-    export SETTINGS_FILE="/tmp/.test_settings.env"
-    
-    # Run the config script
-    bash "$CONFIG_SCRIPT"
-) > /dev/null 2>&1
+# Create mock runner script
+cat > /tmp/mock_runner.sh << 'MOCKSCRIPT'
+#!/bin/bash
+# Mock xsetwacom - captures all calls
+xsetwacom() {
+    case "$1" in
+        --list)
+            echo -e "Wacom Intuos Pro M Pen stylus \t id: 10 \t type: STYLUS"
+            ;;
+        --set)
+            echo "SET: $*" >> /tmp/xsetwacom_mock.log
+            ;;
+        --get)
+            echo "Absolute"
+            ;;
+    esac
+}
+
+# Mock notify-send for CI
+notify-send() {
+    :
+}
+
+export -f xsetwacom
+export -f notify-send
+export SETTINGS_FILE="/tmp/.test_settings.env"
+export USER_HOME="$HOME"
+
+# Source the config script
+source "$1"
+MOCKSCRIPT
+
+chmod +x /tmp/mock_runner.sh
+
+# Run the wrapper
+/tmp/mock_runner.sh "$CONFIG_SCRIPT" 2>&1 || true
 
 # Check results
 if [ -f "$MOCK_LOG" ] && grep -q "Rotate half" "$MOCK_LOG"; then
     echo -e "${GREEN}PASSED${NC}"
 else
     echo -e "${RED}FAILED${NC}"
+    echo "Expected: Rotate half"
     [ -f "$MOCK_LOG" ] && cat "$MOCK_LOG" || echo "No se generó el log."
-    rm -f "$MOCK_LOG" /tmp/.test_settings.env
+    rm -f "$MOCK_LOG" /tmp/.test_settings.env /tmp/mock_runner.sh
     exit 1
 fi
 
 echo -e "\n${GREEN}✅ ¡TODOS LOS TESTS PASARON!${NC}"
-rm -f "$MOCK_LOG" /tmp/.test_settings.env
+rm -f "$MOCK_LOG" /tmp/.test_settings.env /tmp/mock_runner.sh
