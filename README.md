@@ -1,7 +1,7 @@
 # ✍️ Wacom Linux Tool (X11 & Multi-Monitor Edition)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Wacom Linux CI](https://github.com/carlosindliago/wacom-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml)
+[![Wacom Linux CI](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosindriago/wacom-linux/actions/workflows/ci.yml)
 
 A professional, automated configuration suite for **ANY Wacom Tablet** on Linux. Features dynamic device detection, advanced multi-monitor mapping, an interactive TUI installer, and a **modern Electron Dashboard GUI**.
 
