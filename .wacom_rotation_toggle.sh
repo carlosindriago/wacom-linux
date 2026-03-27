@@ -2,10 +2,11 @@
 # 🔃 Wacom Orientation Toggle (Zurdo/Diestro)
 # Alterna entre rotación 0° (Diestro) y 180° (Zurdo) y PERSISTE el cambio.
 
-USER_HOME=$(eval echo "~$USER")
+USER_HOME="${HOME:-$(getent passwd "$USER" | cut -d: -f6)}"
 SETTINGS_FILE="$USER_HOME/.wacom_settings.env"
 
 # 1. Cargar config actual (si existe)
+# shellcheck source=/dev/null
 [ -f "$SETTINGS_FILE" ] && source "$SETTINGS_FILE"
 CUR_ROT="${ROTATION:-none}"
 
@@ -28,4 +29,4 @@ export ROTATION="$NEW_ROT"
 "$USER_HOME"/.wacom_config.sh
 
 # 5. Notificar
-notify-send -t 3000 "Wacom" "Orientación cambiada a: <b>$MSG</b>" --icon=input-tablet
+command -v notify-send &> /dev/null && notify-send -t 3000 "Wacom" "Orientación cambiada a: <b>$MSG</b>" --icon=input-tablet

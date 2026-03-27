@@ -66,6 +66,7 @@ esac
 SCREENS=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}')
 SCREEN_LIST="ALL Escritorio_Completo"
 for s in $SCREENS; do SCREEN_LIST="$SCREEN_LIST $s Monitor_Individual"; done
+# shellcheck disable=SC2086
 SCREEN_NAME=$(whiptail --title "$TITLE" --menu "Mapeo de Pantalla:\n¿A qué monitor quieres vincular tu tableta?" 15 70 6 $SCREEN_LIST 3>&1 1>&2 2>&3)
 if [ -z "$SCREEN_NAME" ]; then SCREEN_NAME="ALL"; fi
 

@@ -9,6 +9,7 @@ LAST_CLICK_FILE="/tmp/wacom_last_click"
 
 # Configuraciones
 TAP_TIMEOUT=0.4 # Tiempo máximo entre clicks (segundos)
+# shellcheck disable=SC2034 # HOLD_THRESHOLD is used for documentation
 HOLD_THRESHOLD=0.5 # A partir de cuánto es un "hold" (segundos)
 
 NOW=$(date +%s.%N)
@@ -60,16 +61,16 @@ fi
             # 1 Tap: Toggle Modo Mouse/Tableta
             "$HOME/.wacom_toggle.sh"
             ;;
-        2)
-            # 2 Taps: Copiar (Ctrl+C)
-            xdotool key ctrl+c
-            notify-send -t 1000 "Wacom" "<b>COPIADO</b> 📋" --icon=edit-copy
-            ;;
-        3)
-            # 3 Taps: Pegar (Ctrl+V)
-            xdotool key ctrl+v
-            notify-send -t 1000 "Wacom" "<b>PEGADO</b> 📥" --icon=edit-paste
-            ;;
+2)
+    # 2 Taps: Copiar (Ctrl+C)
+    xdotool key ctrl+c
+    command -v notify-send &> /dev/null && notify-send -t 1000 "Wacom" "<b>COPIADO</b> 📋" --icon=edit-copy
+    ;;
+3)
+    # 3 Taps: Pegar (Ctrl+V)
+    xdotool key ctrl+v
+    command -v notify-send &> /dev/null && notify-send -t 1000 "Wacom" "<b>PEGADO</b> 📥" --icon=edit-paste
+    ;;
     esac
     
     # Resetear contador

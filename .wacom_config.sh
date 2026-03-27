@@ -55,7 +55,8 @@ done
 if [ ${#DEVICES[@]} -eq 0 ]; then
     echo -e "${RED}❌ ERROR: No se detectó ninguna tableta Wacom conectada.${NC}"
     echo -e "${YELLOW}💡 Tip: Revisá el cable USB o probá en otro puerto.${NC}"
-    notify-send "Wacom Error" "No se detectó la tableta. ¿Está bien conectada?" --icon=error
+    # Only notify if notify-send is available
+    command -v notify-send &> /dev/null && notify-send "Wacom Error" "No se detectó la tableta. ¿Está bien conectada?" --icon=error
     exit 1
 fi
 
@@ -88,12 +89,13 @@ for DEV in "${DEVICES[@]}"; do
     TYPE=$(xsetwacom --list devices | grep "$DEV" | awk -F'type: ' '{print $2}' | awk '{print $1}')
     
     case "$TYPE" in
-        STYLUS)
-            xsetwacom --set "$DEV" button 2 "$BUTTON_2"
-            xsetwacom --set "$DEV" button 3 "$BUTTON_3"
-            xsetwacom --set "$DEV" PressureCurve $PRESSURE_CURVE
-            xsetwacom --set "$DEV" Mode Absolute
-            ;;
+STYLUS)
+    xsetwacom --set "$DEV" button 2 "$BUTTON_2"
+    xsetwacom --set "$DEV" button 3 "$BUTTON_3"
+    # shellcheck disable=SC2086
+    xsetwacom --set "$DEV" PressureCurve $PRESSURE_CURVE
+    xsetwacom --set "$DEV" Mode Absolute
+    ;;
         ERASER)
             xsetwacom --set "$DEV" Mode Absolute
             ;;
@@ -105,8 +107,9 @@ done
 [ "$SCREEN" = "ALL" ] && HUMAN_SCREEN="Todo el Escritorio" || HUMAN_SCREEN="$SCREEN"
 MAIN_MODEL=$(echo "${DEVICES[0]}" | sed 's/ stylus//I' | sed 's/ eraser//I' | sed 's/ pad//I' | xargs)
 
-notify-send -t 5000 "Wacom Detectada ✅" \
-"<b>Modelo:</b> $MAIN_MODEL\n<b>Orientación:</b> $HUMAN_ROT\n<b>Monitor:</b> $HUMAN_SCREEN" \
---icon=input-tablet
+# Only notify if notify-send is available
+command -v notify-send &> /dev/null && notify-send -t 5000 "Wacom Detectada ✅" \
+    "<b>Modelo:</b> $MAIN_MODEL\n<b>Orientación:</b> $HUMAN_ROT\n<b>Monitor:</b> $HUMAN_SCREEN" \
+    --icon=input-tablet
 
 echo -e "${GREEN}✨ ¡Todo listo! Tu $MAIN_MODEL está configurada como $HUMAN_ROT.${NC}"
